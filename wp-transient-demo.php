@@ -24,7 +24,7 @@ class transientDemo {
 			'administrator',
 			'transient-demo',
 			array( &$this, 'page'),
-			'dashicons-admin-site',
+			'dashicons-admin-site',  // @see https://developer.wordpress.org/resource/dashicons/
 			75
 		);
 	}
