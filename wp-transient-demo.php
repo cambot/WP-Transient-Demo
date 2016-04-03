@@ -43,6 +43,7 @@ class meetup_api {
 			return $response['body'];
 		}
 		if ( is_wp_error($response) ) {
+			var_dump($response);
 			return false;
 		}
 		return array();
@@ -52,10 +53,14 @@ class meetup_api {
 class transientDemo {
 	function __construct() {
 		add_action( 'init', array( &$this, 'init'));
+		add_action( 'admin_init', array( &$this, 'settings'));
 	}
 
 	function init() {
 		add_action( 'admin_menu', array( &$this, 'admin_menu'));
+	}
+	function settings() {
+		register_setting( 'wptd-settings-group', 'urlname');
 	}
 
 	function admin_menu() {
@@ -70,9 +75,25 @@ class transientDemo {
 	}
 
 	function page() {
-		echo "<h1>My Little Transient</h1>";
-		echo "<p>Trying out WordPress Transients.</p>";
+		$old_urlname = esc_attr( get_option('urlname') );
+		$btownrb_meetup = new meetup_api($old_urlname);
+		$response = $btownrb_meetup->get_events();
+?>
+<h1>My Little Transient</h1>
+<p>Trying out WordPress Transients.</p>
+<form method="post" action="options.php">
+	<?php settings_fields( 'wptd-settings-group' ); ?>
+	<?php do_settings_sections( 'wptd-settings-group' ); ?>
+	<label>Meetup Group urlname: <input type="text" name="urlname" value="<?= $old_urlname ?>" /></label>
+	<?php submit_button(); ?>
+</form>
+
+<h2>The Response</h2>
+<?php
+		var_dump($response);
 	}
+
+
 }
 
 new transientDemo(); 
