@@ -74,10 +74,11 @@ class transientDemo {
 		);
 	}
 
+	/*
+	* @see https://codex.wordpress.org/Transients_API
+	*/
 	function page() {
 		$old_urlname = esc_attr( get_option('urlname') );
-		$btownrb_meetup = new meetup_api($old_urlname);
-		$response = $btownrb_meetup->get_events();
 ?>
 <h1>My Little Transient</h1>
 <p>Trying out WordPress Transients.</p>
@@ -90,9 +91,17 @@ class transientDemo {
 
 <h2>The Response</h2>
 <?php
-		var_dump($response);
-	}
 
+		$transient_id = "my-demo-transient";
+		$transient_value = get_transient($transient_id);
+		if ( false === $transient_value ) {
+			echo "<p>Transient is currently empty and was reloaded.</p>";
+			$btownrb_meetup = new meetup_api($old_urlname);
+			$transient_value = $btownrb_meetup->get_events();
+			set_transient($transient_id, $transient_value, 30);
+		}
+		var_dump($transient_value);
+	}
 
 }
 
